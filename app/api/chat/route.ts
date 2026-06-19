@@ -69,7 +69,9 @@ Guidelines:
         }
         controller.close();
       } catch (err) {
-        controller.error(err);
+        const msg = err instanceof Error ? err.message : "Unknown error";
+        controller.enqueue(encoder.encode(`\n\n⚠️ Error: ${msg}`));
+        controller.close();
       }
     },
   });
@@ -77,8 +79,8 @@ Guidelines:
   return new Response(readable, {
     headers: {
       "Content-Type": "text/plain; charset=utf-8",
-      "Transfer-Encoding": "chunked",
       "X-Content-Type-Options": "nosniff",
+      "Cache-Control": "no-cache",
     },
   });
 }
