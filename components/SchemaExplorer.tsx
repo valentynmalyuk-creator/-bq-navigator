@@ -1,55 +1,53 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { Search, ChevronRight, ChevronDown, Copy, Check } from "lucide-react";
+import { Search, ChevronRight, ChevronDown, Copy, Check, Table2 } from "lucide-react";
 import type { FullSchema, TableSchema, TableField } from "@/lib/schema";
 import { cn } from "@/lib/utils";
 
 const TYPE_STYLES: Record<string, string> = {
-  STRING: "text-green-400 bg-green-950 border-green-900",
-  BYTES: "text-green-400 bg-green-950 border-green-900",
-  INTEGER: "text-blue-400 bg-blue-950 border-blue-900",
-  INT64: "text-blue-400 bg-blue-950 border-blue-900",
-  FLOAT: "text-purple-400 bg-purple-950 border-purple-900",
-  FLOAT64: "text-purple-400 bg-purple-950 border-purple-900",
-  NUMERIC: "text-purple-400 bg-purple-950 border-purple-900",
-  BIGNUMERIC: "text-purple-400 bg-purple-950 border-purple-900",
-  BOOLEAN: "text-yellow-400 bg-yellow-950 border-yellow-900",
-  BOOL: "text-yellow-400 bg-yellow-950 border-yellow-900",
-  TIMESTAMP: "text-orange-400 bg-orange-950 border-orange-900",
-  DATE: "text-orange-400 bg-orange-950 border-orange-900",
-  TIME: "text-orange-400 bg-orange-950 border-orange-900",
-  DATETIME: "text-orange-400 bg-orange-950 border-orange-900",
-  RECORD: "text-pink-400 bg-pink-950 border-pink-900",
-  STRUCT: "text-pink-400 bg-pink-950 border-pink-900",
-  JSON: "text-cyan-400 bg-cyan-950 border-cyan-900",
-  GEOGRAPHY: "text-teal-400 bg-teal-950 border-teal-900",
+  STRING:     "text-emerald-400 bg-emerald-950/60 border-emerald-900/60",
+  BYTES:      "text-emerald-400 bg-emerald-950/60 border-emerald-900/60",
+  INTEGER:    "text-blue-400 bg-blue-950/60 border-blue-900/60",
+  INT64:      "text-blue-400 bg-blue-950/60 border-blue-900/60",
+  FLOAT:      "text-violet-400 bg-violet-950/60 border-violet-900/60",
+  FLOAT64:    "text-violet-400 bg-violet-950/60 border-violet-900/60",
+  NUMERIC:    "text-violet-400 bg-violet-950/60 border-violet-900/60",
+  BIGNUMERIC: "text-violet-400 bg-violet-950/60 border-violet-900/60",
+  BOOLEAN:    "text-amber-400 bg-amber-950/60 border-amber-900/60",
+  BOOL:       "text-amber-400 bg-amber-950/60 border-amber-900/60",
+  TIMESTAMP:  "text-orange-400 bg-orange-950/60 border-orange-900/60",
+  DATE:       "text-orange-400 bg-orange-950/60 border-orange-900/60",
+  TIME:       "text-orange-400 bg-orange-950/60 border-orange-900/60",
+  DATETIME:   "text-orange-400 bg-orange-950/60 border-orange-900/60",
+  RECORD:     "text-pink-400 bg-pink-950/60 border-pink-900/60",
+  STRUCT:     "text-pink-400 bg-pink-950/60 border-pink-900/60",
+  JSON:       "text-cyan-400 bg-cyan-950/60 border-cyan-900/60",
+  GEOGRAPHY:  "text-teal-400 bg-teal-950/60 border-teal-900/60",
 };
 
 function typeBadge(type: string) {
   return cn(
-    "inline-flex items-center px-1.5 py-0.5 rounded text-xs font-mono border",
-    TYPE_STYLES[type] ?? "text-gray-400 bg-gray-800 border-gray-700"
+    "inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-mono border tracking-wide",
+    TYPE_STYLES[type] ?? "text-zinc-400 bg-zinc-800 border-zinc-700"
   );
 }
 
 function CopyButton({ text, className }: { text: string; className?: string }) {
   const [copied, setCopied] = useState(false);
-
   const handleCopy = async () => {
     await navigator.clipboard.writeText(text);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
-
   return (
     <button
       onClick={handleCopy}
       className={cn(
-        "flex items-center gap-1 px-2 py-1 rounded text-xs transition-colors",
+        "flex items-center gap-1 px-2 py-1 rounded-md text-xs transition-all",
         copied
-          ? "text-green-400 bg-green-950"
-          : "text-gray-400 hover:text-white hover:bg-gray-800",
+          ? "text-emerald-400 bg-emerald-950/60 border border-emerald-900/50"
+          : "text-zinc-500 hover:text-zinc-200 hover:bg-zinc-800 border border-transparent",
         className
       )}
     >
@@ -60,52 +58,47 @@ function CopyButton({ text, className }: { text: string; className?: string }) {
 }
 
 function generateSampleSQL(table: TableSchema): string {
-  const cols = table.fields
-    .slice(0, 10)
-    .map((f) => `  ${f.name}`)
-    .join(",\n");
+  const cols = table.fields.slice(0, 10).map((f) => `  ${f.name}`).join(",\n");
   return `SELECT\n${cols}\nFROM \`${table.fullPath}\`\nLIMIT 100;`;
 }
 
 function TableDetail({ table }: { table: TableSchema }) {
   return (
     <div className="h-full overflow-y-auto p-6 space-y-6">
-      {/* Path */}
       <div>
-        <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">Full path</p>
-        <div className="flex items-center gap-2 p-3 rounded-lg bg-gray-900 border border-gray-800">
-          <code className="flex-1 text-sm font-mono text-blue-300 break-all">
+        <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest mb-2">Full path</p>
+        <div className="flex items-center gap-2 p-3 rounded-xl bg-zinc-900 border border-zinc-800">
+          <code className="flex-1 text-sm font-mono text-violet-300 break-all">
             {table.fullPath}
           </code>
           <CopyButton text={table.fullPath} className="shrink-0" />
         </div>
       </div>
 
-      {/* Columns */}
       <div>
-        <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">
+        <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest mb-2">
           Columns ({table.fields.length})
         </p>
-        <div className="rounded-lg border border-gray-800 overflow-hidden">
+        <div className="rounded-xl border border-zinc-800 overflow-hidden">
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-gray-900 text-xs text-gray-500 uppercase tracking-wide">
-                <th className="text-left px-4 py-2.5 font-medium">Name</th>
-                <th className="text-left px-4 py-2.5 font-medium">Type</th>
-                <th className="text-left px-4 py-2.5 font-medium">Mode</th>
-                <th className="text-left px-4 py-2.5 font-medium hidden md:table-cell">Description</th>
-                <th className="px-4 py-2.5 font-medium w-16"></th>
+              <tr className="bg-zinc-900/80 text-[10px] text-zinc-500 uppercase tracking-widest border-b border-zinc-800">
+                <th className="text-left px-4 py-2.5 font-semibold">Name</th>
+                <th className="text-left px-4 py-2.5 font-semibold">Type</th>
+                <th className="text-left px-4 py-2.5 font-semibold">Mode</th>
+                <th className="text-left px-4 py-2.5 font-semibold hidden md:table-cell">Description</th>
+                <th className="px-4 py-2.5 w-16" />
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-800">
+            <tbody className="divide-y divide-zinc-800/60">
               {table.fields.map((field) => (
-                <tr key={field.name} className="hover:bg-gray-900/50 group">
-                  <td className="px-4 py-2.5 font-mono text-gray-200">{field.name}</td>
+                <tr key={field.name} className="hover:bg-zinc-900/40 group transition-colors">
+                  <td className="px-4 py-2.5 font-mono text-zinc-200 text-xs">{field.name}</td>
                   <td className="px-4 py-2.5">
                     <span className={typeBadge(field.type)}>{field.type}</span>
                   </td>
-                  <td className="px-4 py-2.5 text-gray-500 text-xs">{field.mode}</td>
-                  <td className="px-4 py-2.5 text-gray-500 text-xs hidden md:table-cell">
+                  <td className="px-4 py-2.5 text-zinc-600 text-xs">{field.mode}</td>
+                  <td className="px-4 py-2.5 text-zinc-600 text-xs hidden md:table-cell">
                     {field.description ?? "—"}
                   </td>
                   <td className="px-4 py-2.5 text-right">
@@ -121,15 +114,14 @@ function TableDetail({ table }: { table: TableSchema }) {
         </div>
       </div>
 
-      {/* Sample SQL */}
       <div>
-        <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">Sample query</p>
-        <div className="rounded-lg border border-gray-800 overflow-hidden">
-          <div className="flex items-center justify-between px-4 py-2 bg-gray-900 border-b border-gray-800">
-            <span className="text-xs text-gray-500 font-mono">sql</span>
+        <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest mb-2">Sample query</p>
+        <div className="rounded-xl border border-zinc-800 overflow-hidden">
+          <div className="flex items-center justify-between px-4 py-2 bg-zinc-900/80 border-b border-zinc-800">
+            <span className="text-[10px] text-zinc-600 font-mono uppercase tracking-wider">sql</span>
             <CopyButton text={generateSampleSQL(table)} />
           </div>
-          <pre className="p-4 bg-gray-950 overflow-x-auto text-sm font-mono text-gray-300">
+          <pre className="p-4 bg-zinc-950 overflow-x-auto text-xs font-mono text-zinc-300 leading-relaxed">
             {generateSampleSQL(table)}
           </pre>
         </div>
@@ -153,38 +145,31 @@ function TableRow({
     <div>
       <div
         className={cn(
-          "flex items-center gap-2 px-3 py-2 cursor-pointer rounded-md transition-colors",
+          "flex items-center gap-2 px-2.5 py-1.5 cursor-pointer rounded-lg transition-all",
           isSelected
-            ? "bg-blue-600/20 text-white"
-            : "text-gray-400 hover:bg-gray-800 hover:text-gray-200"
+            ? "bg-violet-600/15 text-white border border-violet-500/20"
+            : "text-zinc-400 hover:bg-zinc-800/60 hover:text-zinc-200 border border-transparent"
         )}
         onClick={onClick}
       >
         <button
-          onClick={(e) => {
-            e.stopPropagation();
-            setExpanded((v) => !v);
-          }}
-          className="p-0.5 rounded hover:bg-gray-700"
+          onClick={(e) => { e.stopPropagation(); setExpanded((v) => !v); }}
+          className="p-0.5 rounded hover:bg-zinc-700/60 transition-colors"
         >
-          {expanded ? (
-            <ChevronDown className="w-3.5 h-3.5" />
-          ) : (
-            <ChevronRight className="w-3.5 h-3.5" />
-          )}
+          {expanded
+            ? <ChevronDown className="w-3 h-3" />
+            : <ChevronRight className="w-3 h-3" />}
         </button>
-        <span className="font-mono text-sm truncate flex-1">{table.tableId}</span>
-        <span className="text-xs text-gray-600 shrink-0">{table.fields.length}</span>
+        <Table2 className={cn("w-3 h-3 shrink-0", isSelected ? "text-violet-400" : "text-zinc-600")} />
+        <span className="font-mono text-xs truncate flex-1">{table.tableId}</span>
+        <span className="text-[10px] text-zinc-600 shrink-0 tabular-nums">{table.fields.length}</span>
       </div>
 
       {expanded && (
-        <div className="ml-7 mt-0.5 space-y-0.5 pb-1">
+        <div className="ml-8 mt-0.5 space-y-0.5 pb-1">
           {table.fields.map((field: TableField) => (
-            <div
-              key={field.name}
-              className="flex items-center gap-2 px-2 py-1 rounded text-xs"
-            >
-              <span className="font-mono text-gray-400 truncate">{field.name}</span>
+            <div key={field.name} className="flex items-center gap-2 px-2 py-1 rounded text-xs">
+              <span className="font-mono text-zinc-500 truncate">{field.name}</span>
               <span className={cn("shrink-0", typeBadge(field.type))}>{field.type}</span>
             </div>
           ))}
@@ -196,37 +181,33 @@ function TableRow({
 
 export default function SchemaExplorer({ schema }: { schema: FullSchema }) {
   const [search, setSearch] = useState("");
-  const [selectedTable, setSelectedTable] = useState<TableSchema | null>(
-    schema.tables[0] ?? null
-  );
+  const [selectedTable, setSelectedTable] = useState<TableSchema | null>(schema.tables[0] ?? null);
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
     if (!q) return schema.tables;
     return schema.tables.filter(
-      (t) =>
-        t.tableId.toLowerCase().includes(q) ||
-        t.fields.some((f) => f.name.toLowerCase().includes(q))
+      (t) => t.tableId.toLowerCase().includes(q) || t.fields.some((f) => f.name.toLowerCase().includes(q))
     );
   }, [schema, search]);
 
   return (
     <div className="flex h-full overflow-hidden">
       {/* Sidebar */}
-      <div className="w-72 shrink-0 flex flex-col border-r border-gray-800 bg-gray-950">
-        <div className="p-3 border-b border-gray-800">
+      <div className="w-72 shrink-0 flex flex-col border-r border-zinc-800/80 bg-zinc-950">
+        <div className="p-3 border-b border-zinc-800/60">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-500" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-zinc-600" />
             <input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search tables or columns…"
-              className="w-full pl-8 pr-3 py-2 text-sm rounded-lg bg-gray-900 border border-gray-800 text-gray-200 placeholder-gray-600 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+              className="w-full pl-8 pr-3 py-2 text-xs rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-200 placeholder-zinc-600 focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 transition-all"
             />
           </div>
           {search && (
-            <p className="mt-2 text-xs text-gray-600">
+            <p className="mt-2 text-[10px] text-zinc-600 px-0.5">
               {filtered.length} of {schema.tables.length} tables
             </p>
           )}
@@ -242,17 +223,17 @@ export default function SchemaExplorer({ schema }: { schema: FullSchema }) {
             />
           ))}
           {filtered.length === 0 && (
-            <p className="text-sm text-gray-600 text-center py-8">No matches</p>
+            <p className="text-xs text-zinc-600 text-center py-10">No matches found</p>
           )}
         </div>
       </div>
 
-      {/* Detail panel */}
-      <div className="flex-1 overflow-hidden">
+      {/* Detail */}
+      <div className="flex-1 overflow-hidden bg-zinc-950">
         {selectedTable ? (
           <TableDetail table={selectedTable} />
         ) : (
-          <div className="flex h-full items-center justify-center text-gray-600 text-sm">
+          <div className="flex h-full items-center justify-center text-zinc-600 text-sm">
             Select a table to explore
           </div>
         )}

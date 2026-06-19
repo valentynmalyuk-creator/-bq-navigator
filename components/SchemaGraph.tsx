@@ -17,15 +17,15 @@ import type { FullSchema, TableSchema } from "@/lib/schema";
 import { cn } from "@/lib/utils";
 
 const TYPE_COLORS: Record<string, string> = {
-  STRING: "text-green-400",
-  BYTES: "text-green-400",
+  STRING: "text-emerald-400",
+  BYTES: "text-emerald-400",
   INTEGER: "text-blue-400",
   INT64: "text-blue-400",
-  FLOAT: "text-purple-400",
-  FLOAT64: "text-purple-400",
-  NUMERIC: "text-purple-400",
-  BOOLEAN: "text-yellow-400",
-  BOOL: "text-yellow-400",
+  FLOAT: "text-violet-400",
+  FLOAT64: "text-violet-400",
+  NUMERIC: "text-violet-400",
+  BOOLEAN: "text-amber-400",
+  BOOL: "text-amber-400",
   TIMESTAMP: "text-orange-400",
   DATE: "text-orange-400",
   DATETIME: "text-orange-400",
@@ -52,15 +52,20 @@ const TableNode = memo(function TableNode({
   return (
     <div
       className={cn(
-        "rounded-xl border bg-gray-900 w-56 overflow-hidden shadow-xl transition-colors",
-        selected ? "border-blue-500" : "border-gray-700"
+        "rounded-xl border w-56 overflow-hidden shadow-2xl transition-all",
+        selected
+          ? "border-violet-500/60 bg-zinc-900 shadow-violet-900/20"
+          : "border-zinc-800 bg-zinc-900/90"
       )}
     >
-      <div className="px-3 py-2.5 bg-gray-800 border-b border-gray-700">
+      <div className={cn(
+        "px-3 py-2.5 border-b",
+        selected ? "bg-violet-950/40 border-violet-800/30" : "bg-zinc-800/60 border-zinc-800"
+      )}>
         <p className="text-xs font-mono font-semibold text-white truncate">
           {table.tableId}
         </p>
-        <p className="text-xs text-gray-500 mt-0.5">{table.fields.length} columns</p>
+        <p className="text-xs text-zinc-500 mt-0.5">{table.fields.length} columns</p>
       </div>
 
       <div className="px-3 py-2 space-y-1">
@@ -80,12 +85,12 @@ const TableNode = memo(function TableNode({
       <Handle
         type="target"
         position={Position.Left}
-        className="!w-2.5 !h-2.5 !bg-blue-500 !border-2 !border-gray-900"
+        className="!w-2.5 !h-2.5 !bg-violet-500 !border-2 !border-zinc-900"
       />
       <Handle
         type="source"
         position={Position.Right}
-        className="!w-2.5 !h-2.5 !bg-blue-500 !border-2 !border-gray-900"
+        className="!w-2.5 !h-2.5 !bg-violet-500 !border-2 !border-zinc-900"
       />
     </div>
   );
@@ -137,11 +142,11 @@ function buildGraph(schema: FullSchema): { nodes: Node[]; edges: Edge[] } {
         target,
         label: field.name,
         type: "smoothstep",
-        style: { stroke: "#3b82f6", strokeWidth: 1.5 },
-        labelStyle: { fill: "#6b7280", fontSize: 10, fontFamily: "monospace" },
-        labelBgStyle: { fill: "#111827", fillOpacity: 0.9 },
+        style: { stroke: "#8b5cf6", strokeWidth: 1.5 },
+        labelStyle: { fill: "#71717a", fontSize: 10, fontFamily: "monospace" },
+        labelBgStyle: { fill: "#09090b", fillOpacity: 0.95 },
         labelBgPadding: [4, 2] as [number, number],
-        markerEnd: { type: MarkerType.ArrowClosed, color: "#3b82f6" },
+        markerEnd: { type: MarkerType.ArrowClosed, color: "#8b5cf6" },
       });
     }
   }
@@ -153,7 +158,7 @@ export default function SchemaGraph({ schema }: { schema: FullSchema }) {
   const { nodes, edges } = useMemo(() => buildGraph(schema), [schema]);
 
   return (
-    <div className="h-full bg-gray-950">
+    <div className="h-full bg-zinc-950">
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -162,20 +167,20 @@ export default function SchemaGraph({ schema }: { schema: FullSchema }) {
         fitViewOptions={{ padding: 0.15 }}
         minZoom={0.1}
         maxZoom={2}
-        className="bg-gray-950"
+        className="bg-zinc-950"
         proOptions={{ hideAttribution: true }}
       >
-        <Controls className="[&>button]:bg-gray-800 [&>button]:border-gray-700 [&>button]:text-gray-300 [&>button:hover]:bg-gray-700" />
+        <Controls className="[&>button]:bg-zinc-800 [&>button]:border-zinc-700 [&>button]:text-zinc-300 [&>button:hover]:bg-zinc-700" />
         <MiniMap
-          className="!bg-gray-900 !border-gray-700"
-          nodeColor="#1e40af"
-          maskColor="rgba(3,7,18,0.7)"
+          className="!bg-zinc-900 !border-zinc-800"
+          nodeColor="#5b21b6"
+          maskColor="rgba(9,9,11,0.75)"
         />
         <Background
           variant={BackgroundVariant.Dots}
-          gap={20}
+          gap={24}
           size={1}
-          color="#1f2937"
+          color="#27272a"
         />
       </ReactFlow>
     </div>

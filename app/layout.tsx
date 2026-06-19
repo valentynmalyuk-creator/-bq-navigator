@@ -6,14 +6,10 @@ export const metadata: Metadata = {
   description: "BigQuery schema explorer for Hily",
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className="dark">
-      <body className="min-h-screen bg-gray-950 text-gray-100 antialiased">
+      <body className="min-h-screen bg-zinc-950 text-zinc-100 antialiased">
         {children}
       </body>
     </html>
