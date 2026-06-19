@@ -149,11 +149,15 @@ export default function DashboardClient({ user }: { user: User }) {
 
         {!loading && !error && schema && (
           <>
-            {activeTab === "schema" && <SchemaExplorer schema={schema} />}
-            {activeTab === "graph" && <SchemaGraph schema={schema} />}
-            {activeTab === "chat" && (
+            <div className={activeTab === "schema" ? "h-full" : "hidden"}>
+              <SchemaExplorer schema={schema} />
+            </div>
+            <div className={activeTab === "graph" ? "h-full" : "hidden"}>
+              <SchemaGraph schema={schema} />
+            </div>
+            <div className={activeTab === "chat" ? "h-full" : "hidden"}>
               <AIChat schemaContext={schemaContext} tableCount={schema.tables.length} />
-            )}
+            </div>
           </>
         )}
       </div>

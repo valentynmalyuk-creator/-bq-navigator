@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Send, Copy, Check, Loader2, MessageSquare } from "lucide-react";
+import { Send, Copy, Check, Loader2, MessageSquare, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface Message {
@@ -110,15 +110,36 @@ export default function AIChat({
   schemaContext: string;
   tableCount: number;
 }) {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const STORAGE_KEY = "bq-chat-history";
+
+  const [messages, setMessages] = useState<Message[]>(() => {
+    if (typeof window === "undefined") return [];
+    try {
+      const stored = localStorage.getItem("bq-chat-history");
+      return stored ? (JSON.parse(stored) as Message[]) : [];
+    } catch {
+      return [];
+    }
+  });
   const [input, setInput] = useState("");
   const [isStreaming, setIsStreaming] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
+    if (messages.length > 0) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
+    }
+  }, [messages, STORAGE_KEY]);
+
+  useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  function clearHistory() {
+    localStorage.removeItem(STORAGE_KEY);
+    setMessages([]);
+  }
 
   async function sendMessage(text: string) {
     if (!text.trim() || isStreaming) return;
@@ -199,6 +220,18 @@ export default function AIChat({
     <div className="flex flex-col h-full">
       {/* Messages */}
       <div className="flex-1 overflow-y-auto px-4 py-6 space-y-5">
+        {messages.length > 0 && (
+          <div className="flex justify-end">
+            <button
+              onClick={clearHistory}
+              disabled={isStreaming}
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs text-gray-600 hover:text-red-400 hover:bg-gray-900 transition-colors disabled:opacity-40"
+            >
+              <Trash2 className="w-3 h-3" />
+              Clear history
+            </button>
+          </div>
+        )}
         {isEmpty && (
           <div className="flex flex-col items-center justify-center h-full gap-6 text-center">
             <div>
